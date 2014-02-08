@@ -5,25 +5,16 @@ var searchType = 'KeywordSearch';
 var keyword = 'cleopatra';
 
 var options = {
-  host: 'http://lookup.dbpedia.org',
+  host: 'lookup.dbpedia.org',
   path: '/api/search/' + searchType + '?QueryString=' + keyword,
-  headers: { Accept: 'application/json' }
+  headers: { 'accept': 'application/json' }
 };
 
 console.log(options);
 
-callback = function(response) {
-  var str = '';
-
-  //another chunk of data has been recieved, so append it to `str`
-  response.on('data', function (chunk) {
-    str += chunk;
-  });
-
-  //the whole response has been recieved, so we just print it out here
-  response.on('end', function () {
-    console.log(str);
-  });
-}
-
-http.request(options, callback).end();
+http.get(options, function(res) {
+  console.log("Got response: " + res.statusCode);
+  console.log(res);
+}).on('error', function(e) {
+  console.log("Got error: " + e.message);
+});
