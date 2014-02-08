@@ -2,7 +2,7 @@ var SparqlClient = require('sparql-client')
 var util = require('util')
 var endpoint = 'http://dbpedia.org/sparql';
 
-var prefixes = 
+var prefixes =
 "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/> "+
 "PREFIX dbpprop: <http://dbpedia.org/property/> "+
 "PREFIX dbres: <http://dbpedia.org/resource/>" +
@@ -40,12 +40,12 @@ function findEntitiesRelatedToSubject(error, results) {
 
 
 	for (i = 0; i < results.results.bindings.length; i++) {
-		
+
 		var subjectURI = results.results.bindings[i].subject.value;
 		// Checks for question keywords in the subjects
 		for (var subject = 0; subject < questionSubjects.length; subject++)
 		{
-			
+
 			if (subjectURI.split(":").pop().toLowerCase().indexOf(questionSubjects[subject].toLowerCase()) != -1)
 			{
 				if (especiallyRelevantSubjectURIs.indexOf(subjectURI) == -1) {
@@ -71,8 +71,8 @@ function findEntitiesRelatedToSubject(error, results) {
 function getEntitiesForSubjectURL(subjectURL) {
 
 	var potentialAnswers = []
-	var query = prefixes + 
-		"SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <" 
+	var query = prefixes +
+		"SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <"
 		+ subjectURL + ">} LIMIT 10";
 		client.query(query)
 		  	.execute(function(error, results) {
