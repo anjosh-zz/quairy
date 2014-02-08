@@ -4,7 +4,12 @@
 			<span>{{flashcard.created | date:'medium'}}</span> /
 			<span>{{flashcard.user.name}}</span>
 			<h2><a data-ng-href="#!/flashcards/{{flashcard._id}}">{{flashcard.question}}</a></h2>
-			<div>{{flashcard.answer}}</div>
+            <ul class="unstyled">
+                <li class='correct-answer'>{{flashcard.answer}}</li>
+                <li ng-repeat="incorrect in flashcard.incorrect">
+                    {{incorrect}}
+                </li>
+            </ul>
 		</li>
 	</ul>
 	<h1 data-ng-hide="!flashcards || flashcards.length">No flashcards yet. <br> Why don't you <a href="/#!/flashcards/create">Create One</a>?</h1>

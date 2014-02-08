@@ -2,6 +2,12 @@
     <span>{{flashcard.created | date:'medium'}}</span> /
     <span>{{flashcard.user.name}}</span>
     <h2>{{flashcard.question}}</h2>
+    <ul class="unstyled">
+        <li class='correct-answer'>{{flashcard.answer}}</li>
+        <li ng-repeat="incorrect in flashcard.incorrect">
+            {{incorrect}}
+        </li>
+    </ul>
     <div data-ng-show="global.user._id == flashcard.user._id">
         <a class="btn" href="/#!/flashcards/{{flashcard._id}}/edit">
         	<i class="glyphicon glyphicon-edit"></i>
@@ -10,5 +16,4 @@
             <i class="glyphicon glyphicon-trash"></i>
         </a>
     </div>
-    <div>{{flashcard.answer}}</div>
 </section>
