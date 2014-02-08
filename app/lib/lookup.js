@@ -99,7 +99,7 @@ var Lookup = function() {
       getCategories(answer, function(categories) {
         findRelevantCategories(categories, keywords, function(relevantCategories) {
           getRelatedEntities(relevantCategories, function(relatedEntities) {
-            console.log(relatedEntities);
+            cb(relatedEntities);
           });
         })
       });

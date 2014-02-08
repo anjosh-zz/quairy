@@ -21,7 +21,7 @@ var FlashcardSchema = new Schema({
   },
   question: String,
   answer: String,
-  incorrect: Array
+  incorrect: []
 });
 
 /**
