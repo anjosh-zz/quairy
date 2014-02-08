@@ -1,8 +1,9 @@
+/*
 var http = require('http');
 
 //The url we want is: 'http://lookup.dbpedia.org/api/search/KeywordSearch?QueryString=cleopatra'
 var searchType = 'KeywordSearch';
-var keyword = 'cleopatra';
+var keyword = 'einstein';
 
 var options = {
   host: 'lookup.dbpedia.org',
@@ -13,8 +14,20 @@ var options = {
 console.log(options);
 
 http.get(options, function(res) {
+  var sum = '';
   console.log("Got response: " + res.statusCode);
-  console.log(res);
+  res.on('data', function(chunk) {
+    sum += chunk;
+  });
+  res.on('end', function() {
+    console.log(JSON.parse(sum)['results'][0]['categories']);
+  });
 }).on('error', function(e) {
   console.log("Got error: " + e.message);
+});
+*/
+var Lookup = require('./lib/lookup');
+var lookup = new Lookup();
+
+lookup.query('Who was the 7th president of the United States of America?', 'Abraham Lincoln', function() {
 });
