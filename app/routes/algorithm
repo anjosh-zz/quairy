@@ -1,0 +1,13 @@
+Pseudo code for the multiple choice question:
+
+// Check for entities on the answer (these are the most important)
+// Check for entities on the question
+// go to the entitites from the answer and find the entities of the subject on dbpedia
+// Go through the subjects and choose ones with terms that are in the answer?
+
+
+
+// if not entities, check for keywords
+
+
+Question: Who
