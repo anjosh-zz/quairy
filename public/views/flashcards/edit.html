@@ -1,21 +1,23 @@
 <section data-ng-controller="FlashcardsController" data-ng-init="findOne()">
-	<form class="form-horizontal col-md-6" role="form" data-ng-submit="update()">
-		<div class="form-group">
-			<label for="question" class="col-md-2 control-label">Question</label>
-			<div class="col-md-10">
+    <form class="form-horizontal col-md-6" role="form" data-ng-submit="update()">
+        <div class="form-group">
+            <label for="question" class="col-md-2 control-label">Question</label>
+            <div class="col-md-10">
                 <textarea style='resize: none' data-ng-model="flashcard.question" id="question" cols="30" rows="10" placeholder="Question" class="form-control" required></textarea>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="answer" class="col-md-2 control-label">Answer</label>
-			<div class="col-md-10">
-				<input type="text" class="form-control" data-ng-model="flashcard.answer" id="answer" placeholder="Answer" required>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10">
-				<button type="submit" class="btn btn-default">Submit</button>
-			</div>
-		</div>
-	</form>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="answer" class="col-md-2 control-label">Answer</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" data-ng-model="flashcard.answer" id="answer" placeholder="Answer" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+        </div>
+        <div class="form-group">
+        </div>
+    </form>
 </section>

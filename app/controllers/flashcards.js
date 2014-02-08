@@ -35,6 +35,7 @@ exports.create = function(req, res) {
 
   lookup.query(flashcard.question, flashcard.answer, function(incorrect) {
     flashcard.incorrect = incorrect;
+    console.log(flashcard);
     flashcard.save(function(err) {
       if (err) {
         return res.send('users/signup', {
@@ -45,8 +46,7 @@ exports.create = function(req, res) {
         res.jsonp(flashcard);
       }
     });
-  })
-
+  });
 };
 
 /**
@@ -66,6 +66,28 @@ exports.update = function(req, res) {
     } else {
       res.jsonp(flashcard);
     }
+  });
+};
+
+/**
+ * Reroll the answers
+ */
+exports.reroll = function(req, res) {
+  var flashcard = req.flashcard;
+
+  lookup.query(flashcard.question, flashcard.answer, function(incorrect) {
+    flashcard.incorrect = incorrect;
+    console.log(flashcard);
+    flashcard.save(function(err) {
+      if (err) {
+        return res.send('users/signup', {
+          errors: err.errors,
+          flashcard: flashcard
+        });
+      } else {
+        res.jsonp(flashcard);
+      }
+    });
   });
 };
 
