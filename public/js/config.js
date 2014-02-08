@@ -4,6 +4,21 @@
 angular.module('mean').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
+        when('/flashcards', {
+          templateUrl: 'views/flashcards/list.html'
+        }).
+        when('/flashcards/create', {
+          templateUrl: 'views/flashcards/create.html'
+        }).
+        when('/flashcards/:flashcardId/edit', {
+          templateUrl: 'views/flashcards/edit.html'
+        }).
+        when('/flashcards/search', {
+          templateUrl: 'views/flashcards/search.html'
+        }).
+        when('/flashcards/:flashcardId', {
+          templateUrl: 'views/flashcards/view.html'
+        }).
         when('/articles', {
             templateUrl: 'views/articles/list.html'
         }).

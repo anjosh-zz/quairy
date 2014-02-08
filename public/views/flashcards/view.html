@@ -1,0 +1,14 @@
+<section data-ng-controller="FlashcardsController" data-ng-init="findOne()">
+    <span>{{flashcard.created | date:'medium'}}</span> /
+    <span>{{flashcard.user.name}}</span>
+    <h2>{{flashcard.question}}</h2>
+    <div data-ng-show="global.user._id == flashcard.user._id">
+        <a class="btn" href="/#!/flashcards/{{flashcard._id}}/edit">
+        	<i class="glyphicon glyphicon-edit"></i>
+        </a>
+        <a class="btn" data-ng-click="remove();">
+            <i class="glyphicon glyphicon-trash"></i>
+        </a>
+    </div>
+    <div>{{flashcard.answer}}</div>
+</section>
