@@ -89,7 +89,7 @@ var Lookup = function() {
     // TODO: Check to make sure there are relevant categories
     if (relevantCategoryURIs.length < 1) {
       console.log('No relevant category found.');
-      for (var i = 0; i < categories.length; i+=2) 
+      for (var i = 0; i < categories.length; i++) 
         relevantCategoryURIs.push(categories[i]['uri']);
     }
 
@@ -155,8 +155,8 @@ function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, rel
             var wrongAnswerDescription;
             getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
               var score = 0;
-              wrongAnswerDescription = wrongAnswerDescription.substring(0, wrongAnswerDescription.split(' ')[0]);
               if (wrongAnswerDescription != null) {
+                wrongAnswerDescription = wrongAnswerDescription.substring(0, wrongAnswerDescription.split('.')[0]);
                 for (var j = 0; j < answerKeywords.length; j++) {
                   // This would be so much better if we could use that relation 
                   // thing that Justin was looking at earlier
