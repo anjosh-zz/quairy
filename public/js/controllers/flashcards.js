@@ -50,14 +50,11 @@ angular.module('mean.flashcards').controller('FlashcardsController', ['$scope', 
   };
 
   $scope.findOne = function() {
-    console.log('findOne');
     Flashcards.get({
       flashcardId: $routeParams.flashcardId
     }, function(flashcard) {
       $scope.flashcard = flashcard;
     });
   };
-
-
 
 }]);

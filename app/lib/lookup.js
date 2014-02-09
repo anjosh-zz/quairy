@@ -76,7 +76,7 @@ var Lookup = function() {
       cb(relatedEntities);
     else {
       var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <"
-        + categories.pop() + ">}";
+        + categories.pop() + ">} LIMIT 5";
       client.query(query).execute(function(err, results) {
         if (err) throw err;
 
