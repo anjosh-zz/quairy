@@ -1,19 +1,23 @@
 <section data-ng-controller="FlashcardsController" data-ng-init="findOne()">
-    <span>{{flashcard.created | date:'medium'}}</span> /
-    <span>{{flashcard.user.name}}</span>
-    <h2>{{flashcard.question}}</h2>
-    <ul class="unstyled">
-        <li class='correct-answer'>{{flashcard.answer}}</li>
-        <li ng-repeat="incorrect in flashcard.incorrect">
-            {{incorrect}}
-        </li>
-    </ul>
-    <div data-ng-show="global.user._id == flashcard.user._id">
-        <a class="btn" href="/#!/flashcards/{{flashcard._id}}/edit">
-        	<i class="glyphicon glyphicon-edit"></i>
+    <ul class="list-group">
+        <a href="#" class="list-group-item active">
+            <h3 class="list-group-item-heading">{{flashcard.question}}</h3>
+            <p class="list-group-item-text">
+                <span>{{flashcard.created | date:'medium'}}</span> /
+                <span>{{flashcard.user.name}}</span>
+            </p>
         </a>
-        <a class="btn" data-ng-click="remove();">
-            <i class="glyphicon glyphicon-trash"></i>
+        <a href='#' class="list-group-item list-group-item-success">{{flashcard.answer}}</a>
+        <a href='#' class="list-group-item list-group-item-danger" ng-repeat="incorrect in flashcard.incorrect">
+            {{incorrect}}
+        </a>
+    </ul>
+    <div class='col-md-offset-10' data-ng-show="global.user._id == flashcard.user._id">
+        <a class="btn btn-primary" href="/#!/flashcards/{{flashcard._id}}/edit">
+            Edit
+        </a>
+        <a class="btn btn-danger" data-ng-click="remove();">
+            Delete
         </a>
     </div>
 </section>

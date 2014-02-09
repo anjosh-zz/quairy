@@ -1,16 +1,8 @@
 <section data-ng-controller="FlashcardsController" data-ng-init="find()">
-	<ul class="flashcards unstyled">
-		<li data-ng-repeat="flashcard in flashcards">
-			<span>{{flashcard.created | date:'medium'}}</span> /
-			<span>{{flashcard.user.name}}</span>
-			<h2><a data-ng-href="#!/flashcards/{{flashcard._id}}">{{flashcard.question}}</a></h2>
-            <ul style='margin-bottom: 20px' class="unstyled">
-                <li class='correct-answer'>{{flashcard.answer}}</li>
-                <li ng-repeat="incorrect in flashcard.incorrect">
-                    {{incorrect}}
-                </li>
-            </ul>
-		</li>
-	</ul>
-	<h1 data-ng-hide="!flashcards || flashcards.length">No flashcards yet. <br> Why don't you <a href="/#!/flashcards/create">Create One</a>?</h1>
+    <ul class="nav nav-pills nav-stacked">
+        <li data-ng-repeat="flashcard in flashcards">
+            <a data-ng-href="#!/flashcards/{{flashcard._id}}"><h2>{{flashcard.question}}</h2></a>
+        </li>
+    </ul>
+    <h1 data-ng-hide="!flashcards || flashcards.length">No flashcards yet. <br> Why don't you <a href="/#!/flashcards/create">Create One</a>?</h1>
 </section>
