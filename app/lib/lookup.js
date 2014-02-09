@@ -1,6 +1,8 @@
 var http = require('http');
 var SparqlClient = require('sparql-client');
 
+var realAnswer;
+
 var Lookup = function() {
 
   /* Alchemy stuff */
@@ -116,7 +118,7 @@ var Lookup = function() {
             while (answer.indexOf('_') !== -1) {
               answer = answer.replace('_',' ');
             }
-            if (relatedEntities.indexOf(answer) === -1) {
+            if (relatedEntities.indexOf(answer) === -1 && answer !== realAnswer) {
               relatedEntities.push(answer);
             }
           }
@@ -194,12 +196,14 @@ function compareScore(a,b) {
     }
     else{
       wrongAnswers.sort(compareScore);
-      return wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
+      //return wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
+      return wrongAnswers.slice(0, 3);
     }
   }
 
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
+    realAnswer = answer;
     console.log(question);
     console.log(answer);
     if (!isNaN(answer)) {

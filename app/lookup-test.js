@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('When did Korea gain independence from Japan?', '1945', function(entities) {
+lookup.query('Who was the first man on the moon?', 'Neil Armstrong', function(entities) {
   console.log(entities);
 });
