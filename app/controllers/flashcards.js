@@ -35,7 +35,6 @@ exports.create = function(req, res) {
 
   lookup.query(flashcard.question, flashcard.answer, function(incorrect) {
     flashcard.incorrect = incorrect;
-    console.log(flashcard);
     flashcard.save(function(err) {
       if (err) {
         return res.send('users/signup', {
@@ -79,7 +78,6 @@ exports.reroll = function(req, res) {
 
   lookup.query(flashcard.question, flashcard.answer, function(incorrect) {
     flashcard.incorrect = incorrect;
-    console.log(flashcard);
     flashcard.save(function(err) {
       if (err) {
         return res.send('users/signup', {

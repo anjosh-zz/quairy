@@ -75,15 +75,25 @@ var Lookup = function() {
     if (categories.length == 0)
       cb(relatedEntities);
     else {
-      var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <"
+      var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?resource dcterms:subject <"
         + categories.pop() + ">} LIMIT 5";
       client.query(query).execute(function(err, results) {
         if (err) throw err;
 
         for (var j = 0; j < results.results.bindings.length; j++) {
-          var answer = results.results.bindings[j].people.value.split('/').pop();
-          if (relatedEntities.indexOf(answer)==-1) {
-            relatedEntities.push(answer);
+          var answer = results.results.bindings[j].resource.value.split('/').pop();
+
+          if (answer.indexOf('%') === -1) {
+            var parIndex = answer.indexOf('(');
+            if (parIndex !== -1) {
+                answer = answer.slice(0, parIndex - 1);
+            }
+            while (answer.indexOf('_') !== -1) {
+              answer = answer.replace('_',' ');
+            }
+            if (relatedEntities.indexOf(answer) === -1) {
+              relatedEntities.push(answer);
+            }
           }
         }
         recursiveQuery(categories, relatedEntities, cb);
