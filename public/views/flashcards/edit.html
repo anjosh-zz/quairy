@@ -23,8 +23,12 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-default">Submit</button>
-                <button type="submit" class="btn btn-default">Reroll</button>
+                <button type="button" ng-click="reroll()" class="btn btn-default">Reroll</button>
             </div>
         </div>
     </form>
+    <button ng-click="count = count + 1" ng-init="count=0">
+      Increment
+    </button>
+    count: {{count}}
 </section>

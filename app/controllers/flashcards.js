@@ -75,6 +75,8 @@ exports.update = function(req, res) {
 exports.reroll = function(req, res) {
   var flashcard = req.flashcard;
 
+  console.log('reroll');
+
   lookup.query(flashcard.question, flashcard.answer, function(incorrect) {
     flashcard.incorrect = incorrect;
     console.log(flashcard);

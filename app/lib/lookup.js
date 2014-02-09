@@ -71,24 +71,29 @@ var Lookup = function() {
     cb(relevantCategoryURIs);
 	}
 
+  function recursiveQuery(categories, relatedEntities, cb) {
+    if (categories.length == 0)
+      console.log(relatedEntities);
+    else {
+      var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <"
+        + categories.pop() + ">}";
+      client.query(query).execute(function(err, results) {
+        if (err) throw err;
+
+        for (var j = 0; j < results.results.bindings.length; j++) {
+          var answer = results.results.bindings[j].people.value.split('/').pop();
+          if (relatedEntities.indexOf(answer)==-1) {
+            relatedEntities.push(answer);
+          }
+        }
+        recursiveQuery(categories, relatedEntities, cb);
+      });
+    }
+  }
+
   function getRelatedEntities(categories, cb) {
     var relatedEntities = [];
-    var i = Math.floor(Math.random()*categories.length);
-    var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <"
-    + categories[i] + ">} LIMIT 3";
-
-    console.log(categories[i]);
-    client.query(query).execute(function(err, results) {
-      if (err) throw err;
-
-      for (var j = 0; j < results.results.bindings.length; j++) {
-        var answer = results.results.bindings[j].people.value.split('/').pop();
-        if (relatedEntities.indexOf(answer)==-1) {
-          relatedEntities.push(answer);
-        }
-      }
-      cb(relatedEntities);
-    });
+    recursiveQuery(categories, relatedEntities, cb);
   }
 
   /* Returns an array with 3 incorrect choices */
