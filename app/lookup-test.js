@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('What founding father discovered electricity?', 'Benjamin_Franklin', function(entities) {
+lookup.query('Who is the founder of Microsoft?', 'Bill Gates', function(entities) {
   console.log(entities);
 });

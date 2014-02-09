@@ -19,7 +19,6 @@ var Lookup = function() {
         results.push(keywords[j]['text']);
       }
 
-      console.log(results);
       cb(results);
     });
   }
@@ -31,7 +30,11 @@ var Lookup = function() {
   };
 
   function getCategories(keyword, cb) {
+    while (keyword.indexOf(' ') !== -1) {
+      keyword = keyword.replace(' ','+');
+    }
     options.path = '/api/search/KeywordSearch?QueryString=' + keyword;
+
 
     http.get(options, function(res) {
       var sum = '';
