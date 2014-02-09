@@ -3,6 +3,14 @@
     margin-left:0
 }
 
+.navbar a {
+ colo: #efefef;
+}
+
+.navbar-inverse {
+  background-color: ##47A6D3;
+}
+
 .content {
     margin-top:70px;
     width:100%

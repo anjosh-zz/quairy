@@ -4,7 +4,7 @@
 			<span>{{flashcard.created | date:'medium'}}</span> /
 			<span>{{flashcard.user.name}}</span>
 			<h2><a data-ng-href="#!/flashcards/{{flashcard._id}}">{{flashcard.question}}</a></h2>
-            <ul class="unstyled">
+            <ul style='margin-bottom: 20px' class="unstyled">
                 <li class='correct-answer'>{{flashcard.answer}}</li>
                 <li ng-repeat="incorrect in flashcard.incorrect">
                     {{incorrect}}
