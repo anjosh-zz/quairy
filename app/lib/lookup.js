@@ -147,7 +147,8 @@ var Lookup = function() {
   }
 
 function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb) {
-  if (i == relatedWrongAnswers.length - 1) {
+  console.log(relatedWrongAnswers.length);
+  if (i >= relatedWrongAnswers.length - 1) {
     cb(relatedWrongAnswers)
   }
   else {

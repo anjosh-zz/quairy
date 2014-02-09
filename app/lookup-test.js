@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('What country donated the statue of Liberty to the US', 'France', function(entities) {
+lookup.query('What is the capital of Iceland', 'Reykjavik', function(entities) {
   console.log(entities);
 });
