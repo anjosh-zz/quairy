@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('Who is the founder of Microsoft?', 'Bill Gates', function(entities) {
+lookup.query('What country donated the statue of Liberty to the US', 'France', function(entities) {
   console.log(entities);
 });

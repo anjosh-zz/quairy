@@ -7,7 +7,7 @@ var Lookup = function() {
   var alchemyapi = require('alchemy-api');
   var alchemy = new alchemyapi('5316174d0d264239358b1423a4523a56fb7ffead');
 
-  function getQuestionKeywords(question, cb) {
+  function getKeywords(question, cb) {
     alchemy.keywords(question, {}, function(err, response) {
       if (err) throw err;
 
@@ -49,6 +49,28 @@ var Lookup = function() {
     });
   }
 
+  function getDescription(entity, cb) {
+     options.path = '/api/search/KeywordSearch?QueryString=' + entity;
+
+    http.get(options, function(res) {
+      var sum = '';
+      res.on('data', function(chunk) {
+        sum += chunk;
+      });
+      res.on('end', function() {
+        var ret;
+        if (JSON.parse(sum)['results'].length > 0 ) {
+            ret = JSON.parse(sum)['results'][0]['description'];
+      } 
+        else {
+          ret = null;
+        }
+        cb(ret);      
+      });
+    }).on('error', function(e) {
+      throw e;
+    });   
+  }
   /* Sparql Lookups */
   var endpoint = 'http://dbpedia.org/sparql';
   var client = new SparqlClient(endpoint);
@@ -104,19 +126,84 @@ var Lookup = function() {
     }
   }
 
+  function getWrongAnswerKeywords(wrongAnswer, cb) {
+    var description;
+    var wrongAnswerKeyWords = []
+    getDescription(wrongAnswer, function(description) {
+      getKeywords(description, function(wrongAnswerKeyWords) {
+   //     console.log("Wrong Answer KeyWords\n" + wrongAnswerKeyWords);
+        cb(wrongAnswerKeyWords);
+      });
+    })
+  }
+
+  function rankEntities(relatedWrongAnswers, answer, i, cb) {
+    if (i == relatedWrongAnswers.length - 1) {
+      cb(relatedWrongAnswers)
+    }
+    else {
+      var answerDescription;
+      var answerKeywords = [];
+      getDescription(answer, function(answerDescription){
+        getKeywords(answerDescription, function(answerKeywords) {
+          var wrongAnswerKeyWords = [];
+          getWrongAnswerKeywords(relatedWrongAnswers[i], function(wrongAnswerKeyWords) {
+            var score = 0;
+            for (var j = 0; j < wrongAnswerKeyWords.length; j++) {
+              // This would be so much better if we could use that relation 
+              // thing that Justin was looking at earlier
+              if (answerKeywords.indexOf(wrongAnswerKeyWords[j]) != -1) {
+                score++;
+              }
+
+            }
+
+           // if (score > 0 ) console.log(relatedWrongAnswers[i] + " : " + score)
+            relatedWrongAnswers[i].score = score;
+
+          });
+       i++;
+       rankEntities(relatedWrongAnswers, answer, i, cb);
+    })
+    })
+  }
+  }
+
 function getRelatedEntities(categories, cb) {
     var relatedEntities = [];
     recursiveQuery(categories, relatedEntities, cb);
+  }
+
+
+function compareScore(a,b) {
+  if (a.score < b.score)
+     return -1;
+  if (a.score > b.score)
+    return 1;
+  return 0;
+}
+
+  function getBestWrongAnswers(wrongAnswers) {
+    if (wrongAnswers.length == 0) return null;
+    if (wrongAnswers.length < 3) {
+      return wrongAnswers;
+    }
+    else{
+      wrongAnswers.sort(compareScore);
+      return wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
+    }
   }
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
     console.log(answer);
     console.log(question);
-    getQuestionKeywords(question, function(keywords) {
+    getKeywords(question, function(keywords) {
       getCategories(answer, function(categories) {
         findRelevantCategories(categories, keywords, function(relevantCategories) {
           getRelatedEntities(relevantCategories, function(relatedEntities) {
-            cb(relatedEntities.slice(0,3));
+            rankEntities(relatedEntities,answer, 0, function(finalRelatedEntities) {
+              cb(getBestWrongAnswers(finalRelatedEntities))
+            })
           });
         })
       });
