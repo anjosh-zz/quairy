@@ -209,7 +209,7 @@ function compareScore(a,b) {
       while (result.length < 3) {
         possible = Math.floor(parseInt(answer) + Math.random() * 20)
         console.log(possible);
-        if (result.indexOf(possible) === -1) {
+        if (result.indexOf(possible) === -1 && result !== parseInt(answer)) {
           result.push(possible);
         }
       }
