@@ -29,5 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('Who was the 7th president of the United States of America?', 'Abraham Lincoln', function() {
+lookup.query('Who was the 7th president of the United States of America?', 'Abraham Lincoln', function(entities) {
+  console.log(entities);
 });

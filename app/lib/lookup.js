@@ -73,7 +73,7 @@ var Lookup = function() {
 
   function recursiveQuery(categories, relatedEntities, cb) {
     if (categories.length == 0)
-      console.log(relatedEntities);
+      cb(relatedEntities);
     else {
       var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?people dcterms:subject <"
         + categories.pop() + ">}";
