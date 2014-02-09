@@ -9,9 +9,6 @@ angular.module('mean.system').controller('HeaderController', ['$scope', 'Global'
     }, {
       'title': 'Create',
       'link': 'flashcards/create'
-    }, {
-      'title': 'Search',
-      'link': 'flashcards/search'
     }];
 
     $scope.isCollapsed = false;
