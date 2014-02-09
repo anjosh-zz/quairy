@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('What is the capital of Iceland', 'Reykjavik', function(entities) {
+lookup.query('When did Korea gain independence from Japan?', '1945', function(entities) {
   console.log(entities);
 });

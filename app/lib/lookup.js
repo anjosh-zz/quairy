@@ -202,19 +202,32 @@ function compareScore(a,b) {
 
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
-    console.log(answer);
     console.log(question);
-    getKeywords(question, function(keywords) {
-      getCategories(answer, function(categories) {
-        findRelevantCategories(categories, keywords, function(relevantCategories) {
-          getRelatedEntities(relevantCategories, function(relatedEntities) {
-            rankEntities(relatedEntities,answer, 0, function(finalRelatedEntities) {
-              cb(getBestWrongAnswers(finalRelatedEntities))
-            })
-          });
-        })
-      });
-    })
+    console.log(answer);
+    if (!isNaN(answer)) {
+      var result = new Array();
+      while (result.length < 3) {
+        possible = Math.floor(parseInt(answer) + Math.random() * 20)
+        console.log(possible);
+        if (result.indexOf(possible) === -1 && result !== parseInt(answer)) {
+          result.push(possible);
+        }
+      }
+      cb(result);
+    }
+    else {
+      getKeywords(question, function(keywords) {
+        getCategories(answer, function(categories) {
+          findRelevantCategories(categories, keywords, function(relevantCategories) {
+            getRelatedEntities(relevantCategories, function(relatedEntities) {
+              rankEntities(relatedEntities,answer, 0, function(finalRelatedEntities) {
+                cb(getBestWrongAnswers(finalRelatedEntities))
+              })
+            });
+          })
+        });
+      })
+    }
   }
 
 }
