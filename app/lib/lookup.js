@@ -5,7 +5,7 @@ var Lookup = function() {
 
   /* Alchemy stuff */
   var alchemyapi = require('alchemy-api');
-  var alchemy = new alchemyapi('5316174d0d264239358b1423a4523a56fb7ffead');
+  var alchemy = new alchemyapi('cd1fa3732c404ef0a1f1f79a2d4326bf1e356086');
 
   function getKeywords(question, cb) {
     alchemy.keywords(question, {}, function(err, response) {
@@ -126,14 +126,11 @@ var Lookup = function() {
     }
   }
 
-  function getWrongAnswerKeywords(wrongAnswer, cb) {
+  function getWrongAnswerDescription(wrongAnswer, cb) {
     var description;
     var wrongAnswerKeyWords = []
     getDescription(wrongAnswer, function(description) {
-      getKeywords(description, function(wrongAnswerKeyWords) {
-   //     console.log("Wrong Answer KeyWords\n" + wrongAnswerKeyWords);
-        cb(wrongAnswerKeyWords);
-      });
+    cb(description);
     })
   }
 
@@ -146,21 +143,20 @@ var Lookup = function() {
       var answerKeywords = [];
       getDescription(answer, function(answerDescription){
         getKeywords(answerDescription, function(answerKeywords) {
-          var wrongAnswerKeyWords = [];
-          getWrongAnswerKeywords(relatedWrongAnswers[i], function(wrongAnswerKeyWords) {
+          for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
+          var wrongAnswerDescription;
+          getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
             var score = 0;
-            for (var j = 0; j < wrongAnswerKeyWords.length; j++) {
+            for (var j = 0; j < answerKeywords.length; j++) {
               // This would be so much better if we could use that relation 
               // thing that Justin was looking at earlier
-              if (answerKeywords.indexOf(wrongAnswerKeyWords[j]) != -1) {
+              if (wrongAnswerDescription.indexOf(answerKeywords[j]) != -1) {
                 score++;
               }
 
             }
-
            // if (score > 0 ) console.log(relatedWrongAnswers[i] + " : " + score)
             relatedWrongAnswers[i].score = score;
-
           });
        i++;
        rankEntities(relatedWrongAnswers, answer, i, cb);
