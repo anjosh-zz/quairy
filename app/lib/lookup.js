@@ -168,8 +168,8 @@ function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, rel
             // if (score > 0 ) console.log(relatedWrongAnswers[i] + " : " + score)
             relatedWrongAnswers[i].score = score;
             });
-          i++;
         }
+    i++;
     compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb);
   }
 }
