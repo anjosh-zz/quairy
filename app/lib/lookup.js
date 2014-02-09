@@ -89,7 +89,7 @@ var Lookup = function() {
     // TODO: Check to make sure there are relevant categories
     if (relevantCategoryURIs.length < 1) {
       console.log('No relevant category found.');
-      for (var i = 0; i < categories.length; i+=2) 
+      for (var i = 0; i < categories.length; i+=3) 
         relevantCategoryURIs.push(categories[i]['uri']);
     }
 
@@ -144,25 +144,28 @@ var Lookup = function() {
       getDescription(answer, function(answerDescription){
         getKeywords(answerDescription, function(answerKeywords) {
           for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
-          var wrongAnswerDescription;
-          getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
-            var score = 0;
-            for (var j = 0; j < answerKeywords.length; j++) {
-              // This would be so much better if we could use that relation 
-              // thing that Justin was looking at earlier
-              if (wrongAnswerDescription.indexOf(answerKeywords[j]) != -1) {
-                score++;
+          if (answerKeywords.length > 0) {
+            var wrongAnswerDescription;
+            getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
+              var score = 0;
+              if (wrongAnswerDescription != null) {
+                for (var j = 0; j < answerKeywords.length; j++) {
+                  // This would be so much better if we could use that relation 
+                  // thing that Justin was looking at earlier
+                  if (wrongAnswerDescription.indexOf(answerKeywords[j]) != -1) {
+                    score++;
+                  }
+                }
               }
-
-            }
-           // if (score > 0 ) console.log(relatedWrongAnswers[i] + " : " + score)
+            // if (score > 0 ) console.log(relatedWrongAnswers[i] + " : " + score)
             relatedWrongAnswers[i].score = score;
-          });
-       i++;
-       rankEntities(relatedWrongAnswers, answer, i, cb);
-    })
-    })
-  }
+            });
+          i++;
+        }
+          rankEntities(relatedWrongAnswers, answer, i, cb);
+        }) // get keywords
+      }) // get desc
+    }
   }
 
 function getRelatedEntities(categories, cb) {
