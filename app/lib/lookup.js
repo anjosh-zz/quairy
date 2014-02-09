@@ -101,11 +101,6 @@ var Lookup = function() {
     }
   }
 
-  function getRelatedEntities(categories, cb) {
-    var relatedEntities = [];
-    recursiveQuery(categories, relatedEntities, cb);
-  }
-
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
     console.log(answer);
@@ -114,7 +109,7 @@ var Lookup = function() {
       getCategories(answer, function(categories) {
         findRelevantCategories(categories, keywords, function(relevantCategories) {
           getRelatedEntities(relevantCategories, function(relatedEntities) {
-            cb(relatedEntities);
+            cb(relatedEntities.slice(0,3));
           });
         })
       });
