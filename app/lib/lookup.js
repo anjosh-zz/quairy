@@ -89,7 +89,7 @@ var Lookup = function() {
     // TODO: Check to make sure there are relevant categories
     if (relevantCategoryURIs.length < 1) {
       console.log('No relevant category found.');
-      for (var i = 0; i < categories.length; i++)
+      for (var i = 0; i < categories.length; i+=2) 
         relevantCategoryURIs.push(categories[i]['uri']);
     }
 
