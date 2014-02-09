@@ -147,7 +147,6 @@ var Lookup = function() {
   }
 
 function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb) {
-  console.log(relatedWrongAnswers.length);
   if (i >= relatedWrongAnswers.length - 1) {
     cb(relatedWrongAnswers)
   }
@@ -166,7 +165,6 @@ function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, rel
                   }
                 }
               }
-            // if (score > 0 ) console.log(relatedWrongAnswers[i] + " : " + score)
             relatedWrongAnswers[i].score = score;
             });
         }
@@ -208,8 +206,7 @@ function compareScore(a,b) {
       var result = new Array();
       while (result.length < 3) {
         possible = Math.floor(parseInt(answer) + Math.random() * 20)
-        console.log(possible);
-        if (result.indexOf(possible) === -1 && result !== parseInt(answer)) {
+        if (result.indexOf(possible) === -1 && result !== parseInt(answer) && possible < 2015) {
           result.push(possible);
         }
       }
