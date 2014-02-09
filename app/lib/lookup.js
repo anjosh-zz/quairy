@@ -101,6 +101,10 @@ var Lookup = function() {
     }
   }
 
+function getRelatedEntities(categories, cb) {
+    var relatedEntities = [];
+    recursiveQuery(categories, relatedEntities, cb);
+  }
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
     console.log(answer);
