@@ -89,7 +89,7 @@ var Lookup = function() {
     // TODO: Check to make sure there are relevant categories
     if (relevantCategoryURIs.length < 1) {
       console.log('No relevant category found.');
-      for (var i = 0; i < categories.length; i+=3) 
+      for (var i = 0; i < categories.length; i+=2) 
         relevantCategoryURIs.push(categories[i]['uri']);
     }
 
@@ -135,19 +135,27 @@ var Lookup = function() {
   }
 
   function rankEntities(relatedWrongAnswers, answer, i, cb) {
-    if (i == relatedWrongAnswers.length - 1) {
-      cb(relatedWrongAnswers)
-    }
-    else {
       var answerDescription;
       var answerKeywords = [];
       getDescription(answer, function(answerDescription){
         getKeywords(answerDescription, function(answerKeywords) {
           for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
-          if (answerKeywords.length > 0) {
+            compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, 0, cb);
+        }) // get keywords
+      }) // get desc
+    
+  }
+
+function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb) {
+  if (i == relatedWrongAnswers.length - 1) {
+    cb(relatedWrongAnswers)
+  }
+  else {
+  if (answerKeywords.length > 0) {
             var wrongAnswerDescription;
             getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
               var score = 0;
+              wrongAnswerDescription = wrongAnswerDescription.substring(0, wrongAnswerDescription.split(' ')[0]);
               if (wrongAnswerDescription != null) {
                 for (var j = 0; j < answerKeywords.length; j++) {
                   // This would be so much better if we could use that relation 
@@ -162,11 +170,9 @@ var Lookup = function() {
             });
           i++;
         }
-          rankEntities(relatedWrongAnswers, answer, i, cb);
-        }) // get keywords
-      }) // get desc
-    }
+    compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb);
   }
+}
 
 function getRelatedEntities(categories, cb) {
     var relatedEntities = [];
@@ -192,6 +198,7 @@ function compareScore(a,b) {
       return wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
     }
   }
+
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
     console.log(answer);
