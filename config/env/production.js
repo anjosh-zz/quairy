@@ -3,7 +3,7 @@
 module.exports = {
     db: 'mongodb://quairy:quairy@troup.mongohq.com:10022/app22025592',
     app: {
-        name: 'MEAN - A Modern Stack - Production'
+        name: 'Quairy - Production'
     },
     facebook: {
         clientID: 'APP_ID',
