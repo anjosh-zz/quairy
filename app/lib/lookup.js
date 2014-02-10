@@ -18,7 +18,10 @@ var Lookup = function() {
 
       results = new Array();
       for (var j = 0; j < keywords.length; j++) {
-        results.push(keywords[j]['text']);
+        splitKeywords = keywords[j]['text'].split(' ');
+        for (var k = 0; k < splitKeywords.length; k++) {
+          results.push(splitKeywords[k]);
+        }
       }
 
       cb(results);
@@ -52,7 +55,11 @@ var Lookup = function() {
   }
 
   function getDescription(entity, cb) {
-     options.path = '/api/search/KeywordSearch?QueryString=' + entity;
+    while (entity.indexOf(' ') !== -1) {
+       entity = entity.replace(' ','+');
+    }
+    options.path = '/api/search/KeywordSearch?QueryString=' + entity;
+    console.log('--- getDescription entity: ' + entity);
 
     http.get(options, function(res) {
       var sum = '';
@@ -61,9 +68,13 @@ var Lookup = function() {
       });
       res.on('end', function() {
         var ret;
-        if (JSON.parse(sum)['results'].length > 0 ) {
-            ret = JSON.parse(sum)['results'][0]['description'];
-      } 
+        results = JSON.parse(sum)['results'];
+        //console.log("&&& Results &&&");
+        //console.log(results);
+        if (results.length > 0 ) {
+          console.log('results[0]\n' + results[0]['label']);
+          ret = results[0]['description'];
+        } 
         else {
           ret = null;
         }
@@ -78,12 +89,18 @@ var Lookup = function() {
   var client = new SparqlClient(endpoint);
 
   function findRelevantCategories(categories, keywords, cb) {
+    console.log('####Keywords');
+    console.log(keywords);
     var relevantCategoryURIs = [];
 
     for (var i = 0; i < categories.length; i++) {
-      var current = categories[i]['label'].toLowerCase();
+      var category = categories[i]['label'].toLowerCase();
       for (var j = 0; j < keywords.length; j++) {
-        if (current.indexOf(keywords[j]) != -1)
+        keyword = keywords[j].toLowerCase();
+        //console.log('Keyword: ' + keyword);
+        //console.log('Category: ' + category);
+        if (category.indexOf(keyword) != -1)
+          console.log('### Relevant Category Found!! ###');
           relevantCategoryURIs.push(categories[i]['uri']);
       }
     }
@@ -96,19 +113,27 @@ var Lookup = function() {
     }
 
     cb(relevantCategoryURIs);
-	}
+  }
 
-  function recursiveQuery(categories, relatedEntities, cb) {
-    if (categories.length == 0)
+  function recursiveQuery(categoryURIs, relatedEntities, cb) {
+    if (categoryURIs.length == 0) {
+      console.log('%%%%%%% Related Entities %%%%%%%');
+      console.log(relatedEntities);
       cb(relatedEntities);
+    }
     else {
+      categoryURI = categoryURIs.pop();
+      category = categoryURI.split('/').pop();
       var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?resource dcterms:subject <"
-        + categories.pop() + ">} LIMIT 5";
+        + categoryURI + ">} LIMIT 5";
       client.query(query).execute(function(err, results) {
         if (err) throw err;
 
         for (var j = 0; j < results.results.bindings.length; j++) {
           var answer = results.results.bindings[j].resource.value.split('/').pop();
+          //console.log('### Answer in Category - ' + category + ' ###');
+          //console.log(category);
+          //console.log('*** ' + answer + ' ***');
 
           if (answer.indexOf('%') === -1) {
             var parIndex = answer.indexOf('(');
@@ -119,11 +144,12 @@ var Lookup = function() {
               answer = answer.replace('_',' ');
             }
             if (relatedEntities.indexOf(answer) === -1 && answer !== realAnswer) {
+              //console.log('###### Added Entity! ######');
               relatedEntities.push(answer);
             }
           }
         }
-        recursiveQuery(categories, relatedEntities, cb);
+        recursiveQuery(categoryURIs, relatedEntities, cb);
       });
     }
   }
@@ -137,57 +163,69 @@ var Lookup = function() {
   }
 
   function rankEntities(relatedWrongAnswers, answer, i, cb) {
-      var answerDescription;
-      var answerKeywords = [];
-      getDescription(answer, function(answerDescription){
-        getKeywords(answerDescription, function(answerKeywords) {
-          for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
-            compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, 0, cb);
-        }) // get keywords
-      }) // get desc
+    console.log('&&&^^^ answer: ' + answer);
     
+    var answerDescription;
+    var answerKeywords = [];
+    getDescription(answer, function(answerDescription){
+      getKeywords(answerDescription, function(answerKeywords) {
+        for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
+        console.log('$$$$ answerKeywords:');
+        console.log(answerKeywords);
+          compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, 0, cb);
+      }) // get keywords
+    }) // get desc
+
   }
 
-function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb) {
-  if (i >= relatedWrongAnswers.length - 1) {
-    cb(relatedWrongAnswers)
-  }
-  else {
-  if (answerKeywords.length > 0) {
-            var wrongAnswerDescription;
-            getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
-              var score = 0;
-              if (wrongAnswerDescription != null) {
-                wrongAnswerDescription = wrongAnswerDescription.substring(0, wrongAnswerDescription.split('.')[0]);
-                for (var j = 0; j < answerKeywords.length; j++) {
-                  // This would be so much better if we could use that relation 
-                  // thing that Justin was looking at earlier
-                  if (wrongAnswerDescription.indexOf(answerKeywords[j]) != -1) {
-                    score++;
-                  }
-                }
+  function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb) {
+    if (i >= relatedWrongAnswers.length - 1) {
+      // just for testing
+      for (var u = 0; u < relatedWrongAnswers.length; u++) {
+        //console.log(relatedWrongAnswers[u] + ' Score = ' + relatedWrongAnswers[u].score);
+      } //
+      cb(relatedWrongAnswers)
+    }
+    else {
+      if (answerKeywords.length > 0) {
+        var wrongAnswerDescription;
+        getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
+          var score = 0;
+          if (wrongAnswerDescription != null) {
+            //console.log("^^ Old description ^^");
+            //console.log(wrongAnswerDescription);
+            //wrongAnswerDescription = wrongAnswerDescription.substring(0, wrongAnswerDescription.split('.')[0]);
+            //console.log("^^ New description ^^");
+            //console.log(wrongAnswerDescription);
+            for (var j = 0; j < answerKeywords.length; j++) {
+              // This would be so much better if we could use that relation 
+              // thing that Justin was looking at earlier
+              if (wrongAnswerDescription.indexOf(answerKeywords[j]) !== -1) {
+                score++;
               }
-            relatedWrongAnswers[i].score = score;
-            });
-        }
-    i++;
-    compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb);
-  }
-}
-
-function getRelatedEntities(categories, cb) {
-    var relatedEntities = [];
-    recursiveQuery(categories, relatedEntities, cb);
+            }
+          }
+        relatedWrongAnswers[i].score = score;
+        });
+      }
+      i++;
+      compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb);
+    }
   }
 
+  function getRelatedEntities(categoryURIs, cb) {
+      var relatedEntities = [];
+      recursiveQuery(categoryURIs, relatedEntities, cb);
+    }
 
-function compareScore(a,b) {
-  if (a.score < b.score)
-     return -1;
-  if (a.score > b.score)
-    return 1;
-  return 0;
-}
+
+  function compareScore(a,b) {
+    if (a.score < b.score)
+       return -1;
+    if (a.score > b.score)
+      return 1;
+    return 0;
+  }
 
   function getBestWrongAnswers(wrongAnswers) {
     if (wrongAnswers.length == 0) return null;

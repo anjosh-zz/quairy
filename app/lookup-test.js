@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('Who was the first man on the moon?', 'Neil Armstrong', function(entities) {
+lookup.query('Who is the olympic athelete with the most gold medals?', 'Michael Phelps', function(entities) {
   console.log(entities);
 });
