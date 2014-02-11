@@ -182,8 +182,8 @@ var Lookup = function() {
     //console.log(relatedWrongAnswers);
 
     if (i >= relatedWrongAnswers.length - 1) {
-      console.log("@@@@ Final Related Wrong Answer Objects @@@");
-      console.log(relatedWrongAnswerObjs);
+      //console.log("@@@@ Final Related Wrong Answer Objects @@@");
+      //console.log(relatedWrongAnswerObjs);
       cb(relatedWrongAnswerObjs)
     }
     else {
@@ -250,13 +250,13 @@ var Lookup = function() {
       console.log("Sorting");
       wrongAnswers.sort(compareScore);
       //return wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
-      console.log("////// Sorted Wrong Answers //////");
-      console.log(wrongAnswers);
+      //console.log("////// Sorted Wrong Answers //////");
+      //console.log(wrongAnswers);
 
       // only need to return top three results
       wrongAnswers = wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
-      console.log("////// Wrong Answers temp //////");
-      console.log(wrongAnswers);
+      //console.log("////// Wrong Answers temp //////");
+      //console.log(wrongAnswers);
 
       // put labels of results into an array for returning back
       for (var i = 0; i < wrongAnswers.length; i++) {
