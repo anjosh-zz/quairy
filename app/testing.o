@@ -1,0 +1,88 @@
+Where is the grand canyon?
+Arizona
+#### Answer Keywords
+[ 'grand', 'canyon' ]
+$$$$ Answer Description Keywords:
+[ 'Mountain',
+  'West',
+  'states',
+  'largest',
+  'city',
+  'United',
+  'States',
+  'Western',
+  'United',
+  'States',
+  'Phoenix',
+  'metropolitan',
+  'area',
+  'southwestern',
+  'region',
+  '50',
+  'states',
+  'Arizona',
+  'Surprise',
+  'Tempe',
+  'Chandler',
+  'Peoria',
+  'Glendale',
+  'Scottsdale',
+  'Mesa',
+  'Gilbert',
+  'Tucson',
+  'population',
+  'country' ]
+@@@@ Final Related Wrong Answer Objects @@@
+[ { label: 'La Navidad', score: 0 },
+  { label: 'Spanish Formosa', score: 0 },
+  { label: 'Argentina', score: 0 },
+  { label: 'California', score: 8 },
+  { label: 'Costa Rica', score: 1 },
+  { label: 'Connecticut', score: 6 },
+  { label: 'Georgia', score: 7 },
+  { label: 'Louisiana', score: 9 },
+  { label: 'Massachusetts', score: 8 },
+  { label: 'Sunset Books', score: 0 },
+  { label: 'New Great Migration', score: 4 },
+  { label: 'Second Great Migration', score: 5 },
+  { label: 'John Tunstall', score: 0 },
+  { label: 'Howell-North Books', score: 1 },
+  { label: 'Index of Arizona-related articles', score: 1 },
+  { label: 'Outline of Arizona', score: 9 },
+  { label: 'George E. Goodfellow', score: 0 },
+  { label: 'New Mexico', score: 2 },
+  { label: 'Italian North Africa', score: 0 },
+  { label: 'Independent Albania', score: 0 },
+  { label: 'Provisional Government of Albania', score: 0 } ]
+Finding Best Answers
+Numbers of Answers: 21
+Sorting
+////// Sorted Wrong Answers //////
+[ { label: 'La Navidad', score: 0 },
+  { label: 'Provisional Government of Albania', score: 0 },
+  { label: 'Argentina', score: 0 },
+  { label: 'Independent Albania', score: 0 },
+  { label: 'Italian North Africa', score: 0 },
+  { label: 'George E. Goodfellow', score: 0 },
+  { label: 'John Tunstall', score: 0 },
+  { label: 'Spanish Formosa', score: 0 },
+  { label: 'Sunset Books', score: 0 },
+  { label: 'Howell-North Books', score: 1 },
+  { label: 'Index of Arizona-related articles', score: 1 },
+  { label: 'Costa Rica', score: 1 },
+  { label: 'New Mexico', score: 2 },
+  { label: 'New Great Migration', score: 4 },
+  { label: 'Second Great Migration', score: 5 },
+  { label: 'Connecticut', score: 6 },
+  { label: 'Georgia', score: 7 },
+  { label: 'California', score: 8 },
+  { label: 'Massachusetts', score: 8 },
+  { label: 'Louisiana', score: 9 },
+  { label: 'Outline of Arizona', score: 9 } ]
+////// Wrong Answers temp //////
+[ { label: 'Massachusetts', score: 8 },
+  { label: 'Louisiana', score: 9 },
+  { label: 'Outline of Arizona', score: 9 } ]
+////// Wrong Answers To be returned //////
+[ 'Massachusetts', 'Louisiana', 'Outline of Arizona' ]
+[ 'Massachusetts', 'Louisiana', 'Outline of Arizona' ]

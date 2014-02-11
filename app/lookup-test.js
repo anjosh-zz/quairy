@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('Who is the olympic athelete with the most gold medals?', 'Michael Phelps', function(entities) {
+lookup.query('Where is the grand canyon?', 'Arizona', function(entities) {
   console.log(entities);
 });

@@ -59,7 +59,7 @@ var Lookup = function() {
        entity = entity.replace(' ','+');
     }
     options.path = '/api/search/KeywordSearch?QueryString=' + entity;
-    console.log('--- getDescription entity: ' + entity);
+    //console.log('--- getDescription entity: ' + entity);
 
     http.get(options, function(res) {
       var sum = '';
@@ -72,7 +72,7 @@ var Lookup = function() {
         //console.log("&&& Results &&&");
         //console.log(results);
         if (results.length > 0 ) {
-          console.log('results[0]\n' + results[0]['label']);
+          //console.log('results[0]\n' + results[0]['label']);
           ret = results[0]['description'];
         } 
         else {
@@ -89,7 +89,7 @@ var Lookup = function() {
   var client = new SparqlClient(endpoint);
 
   function findRelevantCategories(categories, keywords, cb) {
-    console.log('####Keywords');
+    console.log('#### Answer Keywords');
     console.log(keywords);
     var relevantCategoryURIs = [];
 
@@ -117,8 +117,6 @@ var Lookup = function() {
 
   function recursiveQuery(categoryURIs, relatedEntities, cb) {
     if (categoryURIs.length == 0) {
-      console.log('%%%%%%% Related Entities %%%%%%%');
-      console.log(relatedEntities);
       cb(relatedEntities);
     }
     else {
@@ -158,45 +156,46 @@ var Lookup = function() {
     var description;
     var wrongAnswerKeyWords = []
     getDescription(wrongAnswer, function(description) {
-    cb(description);
+      cb(description);
     })
   }
 
   function rankEntities(relatedWrongAnswers, answer, i, cb) {
-    console.log('&&&^^^ answer: ' + answer);
-    
     var answerDescription;
     var answerKeywords = [];
+    var relatedWrongAnswerObjs = new Array();
+
     getDescription(answer, function(answerDescription){
       getKeywords(answerDescription, function(answerKeywords) {
-        for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
-        console.log('$$$$ answerKeywords:');
+        // Don't think this line is doing anything so commenting it - Josh
+        //for (var key = 0; key < answerKeywords.length; key++) answerKeywords[key].split(' ');
+        console.log('$$$$ Answer Description Keywords:');
         console.log(answerKeywords);
-          compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, 0, cb);
+        compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, relatedWrongAnswerObjs, i, cb);
       }) // get keywords
     }) // get desc
 
   }
 
-  function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb) {
+  function compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, relatedWrongAnswerObjs, i, cb) {
+    //console.log('%%%%%%% Related Wrong Answers %%%%%%%');
+    //console.log(relatedWrongAnswers);
+
     if (i >= relatedWrongAnswers.length - 1) {
-      // just for testing
-      for (var u = 0; u < relatedWrongAnswers.length; u++) {
-        //console.log(relatedWrongAnswers[u] + ' Score = ' + relatedWrongAnswers[u].score);
-      } //
-      cb(relatedWrongAnswers)
+      console.log("@@@@ Final Related Wrong Answer Objects @@@");
+      console.log(relatedWrongAnswerObjs);
+      cb(relatedWrongAnswerObjs)
     }
     else {
-      if (answerKeywords.length > 0) {
+      //if (answerKeywords.length > 0) {
         var wrongAnswerDescription;
         getWrongAnswerDescription(relatedWrongAnswers[i], function(wrongAnswerDescription) {
+          var relatedWrongAnswerObj = new Object();
           var score = 0;
+
           if (wrongAnswerDescription != null) {
-            //console.log("^^ Old description ^^");
-            //console.log(wrongAnswerDescription);
+            // I don't think this is doing anything so I commented it out - Josh
             //wrongAnswerDescription = wrongAnswerDescription.substring(0, wrongAnswerDescription.split('.')[0]);
-            //console.log("^^ New description ^^");
-            //console.log(wrongAnswerDescription);
             for (var j = 0; j < answerKeywords.length; j++) {
               // This would be so much better if we could use that relation 
               // thing that Justin was looking at earlier
@@ -205,18 +204,25 @@ var Lookup = function() {
               }
             }
           }
-        relatedWrongAnswers[i].score = score;
+          relatedWrongAnswerObj.label = relatedWrongAnswers[i];
+          relatedWrongAnswerObj.score = score;
+          relatedWrongAnswerObjs.push(relatedWrongAnswerObj);
+          
+          //console.log(relatedWrongAnswerObj.label + ' Score: ' + relatedWrongAnswerObj.score);
+          //console.log("@@@@ Related Wrong Answer Objects @@@");
+          //console.log(relatedWrongAnswerObjs);
+
+          i++;
+          compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, relatedWrongAnswerObjs, i, cb);
         });
-      }
-      i++;
-      compareRightAnswerKeywordsToWrongAnswerDescriptions(answerKeywords, relatedWrongAnswers, i, cb);
+      //}
     }
   }
 
   function getRelatedEntities(categoryURIs, cb) {
-      var relatedEntities = [];
-      recursiveQuery(categoryURIs, relatedEntities, cb);
-    }
+    var relatedEntities = new Array();
+    recursiveQuery(categoryURIs, relatedEntities, cb);
+  }
 
 
   function compareScore(a,b) {
@@ -228,14 +234,38 @@ var Lookup = function() {
   }
 
   function getBestWrongAnswers(wrongAnswers) {
-    if (wrongAnswers.length == 0) return null;
+    console.log("Finding Best Answers");
+    console.log("Numbers of Answers: " + wrongAnswers.length);
+    if (wrongAnswers.length === 0) return null;
+    // wrongAnswers is an Array of Objects, we need to return an array of strings instead
+    wrongAnswersArray = new Array();
+
     if (wrongAnswers.length < 3) {
-      return wrongAnswers;
+      for (var i = 0; i < 3; i++) {
+        wrongAnswersArray.push(wrongAnswers.pop().label);
+      }
+      return wrongAnswersArray;
     }
-    else{
+    else {
+      console.log("Sorting");
       wrongAnswers.sort(compareScore);
       //return wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
-      return wrongAnswers.slice(0, 3);
+      console.log("////// Sorted Wrong Answers //////");
+      console.log(wrongAnswers);
+
+      // only need to return top three results
+      wrongAnswers = wrongAnswers.slice(wrongAnswers.length - 3, wrongAnswers.length);
+      console.log("////// Wrong Answers temp //////");
+      console.log(wrongAnswers);
+
+      // put labels of results into an array for returning back
+      for (var i = 0; i < wrongAnswers.length; i++) {
+        wrongAnswersArray.push(wrongAnswers[i].label);
+      }
+
+      console.log("////// Wrong Answers To be returned //////");
+      console.log(wrongAnswersArray);
+      return wrongAnswersArray;
     }
   }
 
@@ -259,6 +289,7 @@ var Lookup = function() {
         getCategories(answer, function(categories) {
           findRelevantCategories(categories, keywords, function(relevantCategories) {
             getRelatedEntities(relevantCategories, function(relatedEntities) {
+              // we will get back finalRealtedEntities as an Array of Objects not Array of Strings
               rankEntities(relatedEntities,answer, 0, function(finalRelatedEntities) {
                 cb(getBestWrongAnswers(finalRelatedEntities))
               })
