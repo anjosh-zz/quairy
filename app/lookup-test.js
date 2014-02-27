@@ -29,6 +29,6 @@ http.get(options, function(res) {
 var Lookup = require('./lib/lookup');
 var lookup = new Lookup();
 
-lookup.query('Where is the grand canyon?', 'Arizona', function(entities) {
+lookup.query('Who was the first president of the United States?', 'George Washington', function(entities) {
   console.log(entities);
 });

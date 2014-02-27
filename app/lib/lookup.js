@@ -34,32 +34,11 @@ var Lookup = function() {
     headers: { 'accept': 'application/json' }
   };
 
-  function getCategories(keyword, cb) {
-    while (keyword.indexOf(' ') !== -1) {
-      keyword = keyword.replace(' ','+');
-    }
-    options.path = '/api/search/KeywordSearch?QueryString=' + keyword;
-
-
-    http.get(options, function(res) {
-      var sum = '';
-      res.on('data', function(chunk) {
-        sum += chunk;
-      });
-      res.on('end', function() {
-        cb(JSON.parse(sum)['results'][0]['categories']);
-      });
-    }).on('error', function(e) {
-      throw e;
-    });
-  }
-
-  function getDescription(entity, cb) {
+  function dbLookup(keyword, cbType, cb) {
     while (entity.indexOf(' ') !== -1) {
        entity = entity.replace(' ','+');
     }
     options.path = '/api/search/KeywordSearch?QueryString=' + entity;
-    //console.log('--- getDescription entity: ' + entity);
 
     http.get(options, function(res) {
       var sum = '';
@@ -69,11 +48,8 @@ var Lookup = function() {
       res.on('end', function() {
         var ret;
         results = JSON.parse(sum)['results'];
-        //console.log("&&& Results &&&");
-        //console.log(results);
         if (results.length > 0 ) {
-          //console.log('results[0]\n' + results[0]['label']);
-          ret = results[0]['description'];
+          ret = results[0][cbType];
         } 
         else {
           ret = null;
@@ -84,9 +60,15 @@ var Lookup = function() {
       throw e;
     });   
   }
-  /* Sparql Lookups */
-  var endpoint = 'http://dbpedia.org/sparql';
-  var client = new SparqlClient(endpoint);
+
+  function getCategories(keyword, cb) {
+    dbLookup(keyword, 'uri', cb);
+    dbLookup(keyword, 'categories', cb);
+  }
+
+  function getDescription(entity, cb) {
+    dbLookup(entity, 'description', cb);
+  }
 
   function findRelevantCategories(categories, keywords, cb) {
     console.log('#### Answer Keywords');
@@ -115,24 +97,46 @@ var Lookup = function() {
     cb(relevantCategoryURIs);
   }
 
-  function recursiveQuery(categoryURIs, relatedEntities, cb) {
+  /* Sparql Lookups */
+  var endpoint = 'http://dbpedia.org/sparql';
+  var client = new SparqlClient(endpoint);
+
+  function recursiveQuery(categoryURIs, answerURI, relatedEntities, cb) {
     if (categoryURIs.length == 0) {
       cb(relatedEntities);
     }
     else {
       categoryURI = categoryURIs.pop();
       category = categoryURI.split('/').pop();
-      var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?resource dcterms:subject <"
-        + categoryURI + ">} LIMIT 5";
+
+      // We're still limiting it to 5 entities per category and it's so slow :(
+      //var query = "SELECT * FROM <http://dbpedia.org> WHERE { ?resource dcterms:subject <" + categoryURI + ">} LIMIT 5";
+
+      //var relatedEntitiesQuery = 'SELECT ?resource ?type {  \
+      //  <' + answerURI + '> a ?type .                       \
+      //  filter( contains( str(?type), "ontology" ) ) .      \
+      //  ?resource dcterms:subject <" + categoryURI + ">;    \
+      //  a ?type } LIMIT 5';
+
+      var relatedEntitiesQuery = 'SELECT DISTINCT ?resource { \
+        <' + answerURI + '> a ?type .                         \
+        filter( contains( str(?type), "ontology" ) ) .        \
+        <' + answerURI + '> dcterms:subject ?subject .        \
+        ?resource dcterms:subject ?subject;                   \
+        rdf:type ?type } LIMIT 50';
+ 
+      console.log(query);
       client.query(query).execute(function(err, results) {
         if (err) throw err;
 
+        console.log(JSON.stringify(results));
         for (var j = 0; j < results.results.bindings.length; j++) {
           var answer = results.results.bindings[j].resource.value.split('/').pop();
+
           //console.log('### Answer in Category - ' + category + ' ###');
-          //console.log(category);
           //console.log('*** ' + answer + ' ***');
 
+          // hack to get rid of characters with % in them (strange encoding)
           if (answer.indexOf('%') === -1) {
             var parIndex = answer.indexOf('(');
             if (parIndex !== -1) {
@@ -147,7 +151,7 @@ var Lookup = function() {
             }
           }
         }
-        recursiveQuery(categoryURIs, relatedEntities, cb);
+        recursiveQuery(categoryURIs, answerURI, relatedEntities, cb);
       });
     }
   }
@@ -219,9 +223,9 @@ var Lookup = function() {
     }
   }
 
-  function getRelatedEntities(categoryURIs, cb) {
+  function getRelatedEntities(categoryURIs, answerURI, cb) {
     var relatedEntities = new Array();
-    recursiveQuery(categoryURIs, relatedEntities, cb);
+    recursiveQuery(categoryURIs, answerURI, relatedEntities, cb);
   }
 
 
@@ -271,14 +275,21 @@ var Lookup = function() {
 
   /* Returns an array with 3 incorrect choices */
   this.query = function(question, answer, cb) {
-    realAnswer = answer;
     console.log(question);
     console.log(answer);
-    if (!isNaN(answer)) {
+
+    // bad global variable
+    realAnswer = answer;
+
+    answerObj = new Object();
+    answerObj.uri = '';
+    answerObj.label = answer;
+
+    if (!isNaN(answer.label)) {
       var result = new Array();
       while (result.length < 3) {
-        possible = Math.floor(parseInt(answer) + Math.random() * 20)
-        if (result.indexOf(possible) === -1 && result !== parseInt(answer) && possible < 2015) {
+        possible = Math.floor(parseInt(answer.label) + Math.random() * 20)
+        if (result.indexOf(possible) === -1 && result !== parseInt(answer.label) && possible < 2015) {
           result.push(possible);
         }
       }
@@ -286,11 +297,11 @@ var Lookup = function() {
     }
     else {
       getKeywords(question, function(keywords) {
-        getCategories(answer, function(categories) {
+        getCategories(answerObj.label, function(categories) {
           findRelevantCategories(categories, keywords, function(relevantCategories) {
-            getRelatedEntities(relevantCategories, function(relatedEntities) {
+            getRelatedEntities(relevantCategories, answerObj.uri, function(relatedEntities) {
               // we will get back finalRealtedEntities as an Array of Objects not Array of Strings
-              rankEntities(relatedEntities,answer, 0, function(finalRelatedEntities) {
+              rankEntities(relatedEntities, answerObj.label, 0, function(finalRelatedEntities) {
                 cb(getBestWrongAnswers(finalRelatedEntities))
               })
             });

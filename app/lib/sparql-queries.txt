@@ -1,0 +1,6 @@
+SELECT DISTINCT ?resource {
+ :Arizona a ?type .
+ filter( contains( str(?type), "ontology" ) ) .
+ :Arizona dcterms:subject ?subject .
+ ?resource dcterms:subject ?subject;
+ rdf:type ?type } LIMIT 100
