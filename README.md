@@ -1,8 +1,8 @@
 #Quairy
 
-A web app to automate the quiz creation process.
+Made in 36 hours at BoilerMake 2014.
 
-Created in 36 hours for BoilerMake 2014.
+A web app to automate creating quizzes. Comes up with multiple choice question answers that seem correct but are not. Uses the MEAN stack and SPARQL.
 
 Joshua Angelucci,
 Lizzy Burl,
